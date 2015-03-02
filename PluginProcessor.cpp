@@ -17,6 +17,12 @@
 const float defaultVolume = -3.0f;
 const float defaultPan = 0.0;
 const double PI = 3.1415926535897932384626433832795;
+const int defaultPeakFreq = 750; //Hz
+const int defaultCutoff = 50; //hz
+const float defaultQ = 3.f;
+const int defaultTime = 40; //ms
+const float defaultSignalMultiplier = 1.f;
+
 
 //==============================================================================
 Musi45effectAudioProcessor::Musi45effectAudioProcessor()
@@ -24,6 +30,34 @@ Musi45effectAudioProcessor::Musi45effectAudioProcessor()
     // In the constructor do any initializations that need to be done once
     
     // STEP 4.4b - set default values for all user params
+    usrParams[peakFreqParam].setMinMax(300, 20000);
+    usrParams[peakFreqParam].setWithUparam(defaultPeakFreq);
+    
+    usrParams[peakGainParam].setMinMax(-96.0, 10.0);
+    usrParams[peakGainParam].setWithUparam(defaultVolume);
+    
+    usrParams[qParam].setMinMax(0.5, 20.0);
+    usrParams[qParam].setWithUparam(defaultQ);
+    
+    usrParams[lowCutoffParam].setMinMax(0, 200);
+    usrParams[lowCutoffParam].setWithUparam(defaultCutoff);
+    
+    usrParams[shelfGainParam].setMinMax(-96.0, 10.0);
+    usrParams[shelfGainParam].setWithUparam(defaultVolume);
+    
+    usrParams[decayParam].setMinMax(0.01, 20.0);
+    usrParams[decayParam].setWithUparam(defaultSignalMultiplier);
+
+    usrParams[timeParam].setMinMax(1, 4000);
+    usrParams[timeParam].setWithUparam(defaultTime);
+    
+    usrParams[wetParam].setMinMax(0.01, 20.0);
+    usrParams[wetParam].setWithUparam(defaultSignalMultiplier);
+
+    usrParams[dryParam].setMinMax(0.01, 20.0);
+    usrParams[dryParam].setWithUparam(defaultSignalMultiplier);
+
+    
 //    usrParams[volumeParam].setMinMax(-96.0, 10.0);
 //    usrParams[volumeParam].setWithUparam(defaultVolume);
 //    
@@ -59,10 +93,26 @@ float Musi45effectAudioProcessor::getParameter (int index)
     // STEP 4.5 - return the slider value of a user param when called with its index
     switch (index)
     {
-//        case volumeParam:
-//            return usrParams[volumeParam].getVstVal();
-//        case panParam:
-//            return usrParams[volumeParam].getVstVal();
+
+        case peakFreqParam:
+            return usrParams[peakFreqParam].getVstVal();
+        case peakGainParam:
+            return usrParams[peakGainParam].getVstVal();
+        case qParam:
+            return usrParams[qParam].getVstVal();
+        case lowCutoffParam:
+            return usrParams[lowCutoffParam].getVstVal();
+        case shelfGainParam:
+            return usrParams[shelfGainParam].getVstVal();
+        case decayParam:
+            return usrParams[decayParam].getVstVal();
+        case timeParam:
+            return usrParams[timeParam].getVstVal();
+        case wetParam:
+            return usrParams[wetParam].getVstVal();
+        case dryParam:
+            return usrParams[dryParam].getVstVal();
+
         default:
             return 0.0f;
     }
@@ -78,26 +128,66 @@ void Musi45effectAudioProcessor::setParameter (int index, float newValue)
     // UI-related, or anything at all that may block in any way!
     
     // STEP 4.5 - set algorithm parameters from user parameters
-//    switch (index)
-//    {
 //        // first user param...
-//        case volumeParam:
-//            usrParams[volumeParam].setWithVstVal(newValue);
+//        case peakFreqParam:
+//            usrParams[peakFreqParam].setWithVstVal(newValue);
+//            calcAlgParams();
+//            break;
+//            
+//        case peakGainParam:
+//            usrParams[peakGainParam].setWithVstVal(newValue);
+//            calcAlgParams();
+//            break;
+//            
+//        case qParam:
+//            usrParams[qParam].setWithVstVal(newValue);
+//            calcAlgParams();
+//            break;
+//            
+//        case lowCutoffParam:
+//            usrParams[lowCutoffParam].setWithVstVal(newValue);
 //            calcAlgParams();
 //            break;
 //        
-//        // second user param...
-//        case panParam:
-//            usrParams[panParam].setWithVstVal(newValue);
+//        case shelfGainParam:
+//            usrParams[shelfGainParam].setWithVstVal(newValue);
 //            calcAlgParams();
 //            break;
-//
-//        default:
+//        
+//        case decayParam:
+//            usrParams[decayParam].setWithVstVal(newValue);
+//            calcAlgParams();
+//            break;
+//            
+//        case timeParam:
+//            usrParams[timeParam].setWithVstVal(newValue);
+//            calcAlgParams();
+//            break;
+//            
+//        case wetParam:
+//            usrParams[wetParam].setWithVstVal(newValue);
+//            calcAlgParams();
+//            break;
+//            
+//        case dryParam:
+//            usrParams[dryParam].setWithVstVal(newValue);
+//            calcAlgParams();
+//            break;
+//        
+//        
+////
+////        // second user param...
+////        case panParam:
+////            usrParams[panParam].setWithVstVal(newValue);
+////            calcAlgParams();
+////            break;
+////
+//       default:
 //            break;
 //    }
     
-//    usrParams[index].setWithVstVal(newValue);
-//    calcAlgParams();
+    usrParams[index].setWithVstVal(newValue);
+    calcAlgParams();
 }
 
 
@@ -105,7 +195,7 @@ void Musi45effectAudioProcessor::setParameter (int index, float newValue)
 // I added this function to calculate new gain values whenever Volume or Pan changes
 void Musi45effectAudioProcessor::calcAlgParams()
 {
-    double pan, tempGain, tempL, tempR;
+ //   double pan, tempGain, tempL, tempR;
 //    
 //    // calc linear gain from dB volume
 //    tempGain = pow(10, usrParams[volumeParam].getUparamVal() / 20);   // the linear gain from the dB slider
@@ -139,14 +229,29 @@ void Musi45effectAudioProcessor::calcAlgParams()
 // STEP 4.7b
 float Musi45effectAudioProcessor::getParameterDefaultValue (int index)
 {
-//    switch (index)
-//    {
-//        case volumeParam:
-//            return defaultVolume;
-//        case panParam:
-//            return defaultPan;
-//        default:            break;
-//    }
+    switch (index)
+    {
+        case peakFreqParam:
+            return defaultPeakFreq;
+        case peakGainParam:
+            return defaultVolume;
+        case qParam:
+            return defaultQ;
+        case lowCutoffParam:
+            return defaultCutoff;
+        case shelfGainParam:
+            return defaultVolume;
+        case decayParam:
+            return defaultSignalMultiplier;
+        case timeParam:
+            return defaultTime;
+        case wetParam:
+            return defaultSignalMultiplier;
+        case dryParam:
+            return defaultSignalMultiplier;
+
+        default:            break;
+    }
     
     return 0.0f;
 }
@@ -154,12 +259,29 @@ float Musi45effectAudioProcessor::getParameterDefaultValue (int index)
 // STEP 4.8
 const String Musi45effectAudioProcessor::getParameterName (int index)
 {
-//    switch (index)
-//    {
-//        case volumeParam:   return "volume";
-//        case panParam:      return "balance";
-//        default:            break;
-//    }
+    
+    //Slider peakFreqSlider;
+    //Slider peakGainSlider;
+    //Slider qSlider;
+    //Slider lowFreqSlider;
+    //Slider lowGainSlider;
+    //Slider decaySlider;
+    //Slider timeSlider;
+    //Slider wetSlider;
+    //Slider drySlider;
+    switch (index)
+    {
+        case peakFreqParam:   return "peak frequency";
+        case peakGainParam:      return "peak gain";
+        case qParam:            return "Q";
+        case lowCutoffParam:    return "shelf cutoff frequency";
+        case shelfGainParam:    return "shelf gain";
+        case decayParam:        return "decay";
+        case timeParam:         return "delay time";
+        case wetParam:          return "wet gain";
+        case dryParam:          return "dry gain";
+        default:            break;
+    }
     
     return String::empty;
 }

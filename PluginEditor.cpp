@@ -231,68 +231,68 @@ void Musi45effectAudioProcessorEditor::sliderValueChanged (Slider* slider)
         // that they've changed.
         
         // first set the usrParam from the slider, and get the vst normalized version of the uParam:
-        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::volumeParam].setWithUparam(peakFreqSlider.getValue());
+        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::peakFreqParam].setWithUparam(peakFreqSlider.getValue());
         
         // then call setParameter with the vst normalized value
-        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::volumeParam, vstVal);
+        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::peakFreqParam, vstVal);
     }
     
     else if (slider == &peakGainSlider)
     {
-        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::panParam].setWithUparam(peakGainSlider.getValue());
+        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::peakGainParam].setWithUparam(peakGainSlider.getValue());
         
         // then call setParameter with the vst normalized value
-        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::panParam, vstVal);
+        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::peakGainParam, vstVal);
     }
     
     else if (slider == &qSlider)
     {
-        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::panParam].setWithUparam(qSlider.getValue());
+        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::qParam].setWithUparam(qSlider.getValue());
         
         // then call setParameter with the vst normalized value
-        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::panParam, vstVal);
+        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::qParam, vstVal);
     }
     else if (slider == &lowFreqSlider)
     {
-        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::panParam].setWithUparam(lowFreqSlider.getValue());
+        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::lowCutoffParam].setWithUparam(lowFreqSlider.getValue());
         
         // then call setParameter with the vst normalized value
-        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::panParam, vstVal);
+        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::lowCutoffParam, vstVal);
     }
     else if (slider == &lowGainSlider)
     {
-        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::panParam].setWithUparam(lowGainSlider.getValue());
+        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::shelfGainParam].setWithUparam(lowGainSlider.getValue());
         
         // then call setParameter with the vst normalized value
-        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::panParam, vstVal);
+        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::shelfGainParam, vstVal);
     }
     else if (slider == &decaySlider)
     {
-        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::panParam].setWithUparam(decaySlider.getValue());
+        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::decayParam].setWithUparam(decaySlider.getValue());
         
         // then call setParameter with the vst normalized value
-        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::panParam, vstVal);
+        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::decayParam, vstVal);
     }
     else if (slider == &timeSlider)
     {
-        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::panParam].setWithUparam(timeSlider.getValue());
+        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::timeParam].setWithUparam(timeSlider.getValue());
         
         // then call setParameter with the vst normalized value
-        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::panParam, vstVal);
+        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::timeParam, vstVal);
     }
     else if (slider == &wetSlider)
     {
-        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::panParam].setWithUparam(wetSlider.getValue());
+        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::wetParam].setWithUparam(wetSlider.getValue());
         
         // then call setParameter with the vst normalized value
-        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::panParam, vstVal);
+        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::wetParam, vstVal);
     }
     else if (slider == &drySlider)
     {
-        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::panParam].setWithUparam(drySlider.getValue());
+        vstVal = getProcessor().usrParams[Musi45effectAudioProcessor::dryParam ].setWithUparam(drySlider.getValue());
         
         // then call setParameter with the vst normalized value
-        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::panParam, vstVal);
+        getProcessor().setParameterNotifyingHost (Musi45effectAudioProcessor::dryParam, vstVal);
     }
     
 }
@@ -306,15 +306,15 @@ void Musi45effectAudioProcessorEditor::timerCallback()
     Musi45effectAudioProcessor& ourProcessor = getProcessor();
     
     // these get will update the sliders in the UI
-    peakFreqSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::volumeParam].getUparamVal(), dontSendNotification);
-    peakGainSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::panParam].getUparamVal(), dontSendNotification);
-    qSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::volumeParam].getUparamVal(), dontSendNotification);
-    lowFreqSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::panParam].getUparamVal(), dontSendNotification);
-    lowGainSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::volumeParam].getUparamVal(), dontSendNotification);
-    decaySlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::panParam].getUparamVal(), dontSendNotification);
-    timeSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::volumeParam].getUparamVal(), dontSendNotification);
-    wetSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::panParam].getUparamVal(), dontSendNotification);
-    drySlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::volumeParam].getUparamVal(), dontSendNotification);
+    peakFreqSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::peakFreqParam].getUparamVal(), dontSendNotification);
+    peakGainSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::peakGainParam].getUparamVal(), dontSendNotification);
+    qSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::qParam].getUparamVal(), dontSendNotification);
+    lowFreqSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::lowCutoffParam].getUparamVal(), dontSendNotification);
+    lowGainSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::shelfGainParam].getUparamVal(), dontSendNotification);
+    decaySlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::decayParam].getUparamVal(), dontSendNotification);
+    timeSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::timeParam].getUparamVal(), dontSendNotification);
+    wetSlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::wetParam].getUparamVal(), dontSendNotification);
+    drySlider.setValue(ourProcessor.usrParams[Musi45effectAudioProcessor::dryParam].getUparamVal(), dontSendNotification);
 }
 
 

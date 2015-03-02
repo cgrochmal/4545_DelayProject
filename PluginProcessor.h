@@ -69,11 +69,19 @@ public:
     
     //===== ADD NEW STUFF HERE =====================================================
     
+    
     // STEP 4.1 - Create an enumerated type called 'Parameters' for the User Parameters
     enum Parameters
     {
-        volumeParam = 0,    // set the first to zero
-        panParam,
+        peakFreqParam = 0,
+        peakGainParam,
+        qParam,
+        lowCutoffParam,
+        shelfGainParam,
+        decayParam,
+        timeParam,
+        wetParam,
+        dryParam,
         totalNumParams      // must end with this variable
     };
     
