@@ -37,7 +37,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
 {
     // Peak Frequency
     peakFreqSlider.setSliderStyle(Slider::RotaryHorizontalDrag);  // what kind of slider?
-    peakFreqSlider.setRange(-30.0, 30, 0.5);               // the dB version
+    peakFreqSlider.setRange(300, 20000, 1);               // the dB version
     addAndMakeVisible(peakFreqSlider);                      // add the slider to the GUI
     peakFreqSlider.addListener(this);                       // STEP 3.4 - add a listener for this function
     peakFreqSlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -53,7 +53,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Peak Gain
     peakGainSlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    peakGainSlider.setRange(20, 200, 0.5);
+    peakGainSlider.setRange(-96.0, 10.0, 0.1);
     addAndMakeVisible(peakGainSlider);
     peakGainSlider.addListener(this);
     peakGainSlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -69,7 +69,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Peak Q
     qSlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    qSlider.setRange(0.25, 20.0, 0.5);
+    qSlider.setRange(0.5, 20.0, 0.01);
     addAndMakeVisible(qSlider);
     qSlider.addListener(this);
     qSlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -85,7 +85,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     // Low Frequency
     lowFreqSlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    lowFreqSlider.setRange(-30.0, 30, 0.5);
+    lowFreqSlider.setRange(0, 200, 1);
     addAndMakeVisible(lowFreqSlider);
     lowFreqSlider.addListener(this);
     lowFreqSlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -101,7 +101,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Low Gain
     lowGainSlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    lowGainSlider.setRange(2000, 20000, 0.5);
+    lowGainSlider.setRange(-96.0, 10.0, 0.1);
     addAndMakeVisible(lowGainSlider);
     lowGainSlider.addListener(this);
     lowGainSlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -117,7 +117,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Decay
     decaySlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    decaySlider.setRange(-30.0, 30, 0.5);
+    decaySlider.setRange(0.01, 20.0, 0.01);
     addAndMakeVisible(decaySlider);
     decaySlider.addListener(this);
     decaySlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -133,7 +133,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Time
     timeSlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    timeSlider.setRange(200, 2000, 0.5);
+    timeSlider.setRange(1, 4000, 1);
     addAndMakeVisible(timeSlider);
     timeSlider.addListener(this);
     timeSlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -149,7 +149,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     // Wet
     wetSlider.setSliderStyle (Slider::LinearVertical);
-    wetSlider.setRange(200, 2000, 0.5);
+    wetSlider.setRange(0.01, 20.0, 0.01);
     addAndMakeVisible(wetSlider);
     wetSlider.addListener(this);
     wetSlider.setColour(0x1001310, Colour(255, 255, 255));
@@ -163,7 +163,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Dry
     drySlider.setSliderStyle (Slider::LinearVertical);
-    drySlider.setRange(200, 2000, 0.5);
+    drySlider.setRange(0.01, 20.0, 0.01);
     addAndMakeVisible(drySlider);
     drySlider.addListener(this);
     drySlider.setColour(0x1001310, Colour(255, 255, 255));
