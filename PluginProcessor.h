@@ -13,6 +13,9 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "UParam.h"
+#include "BiQuad.h"
+#include "Delay.h"
+#include "Mu45FilterCalc.h"
 
 
 //==============================================================================
@@ -96,13 +99,28 @@ private:
     //==============================================================================
     
     // STEP 6.1 - Add algorithm parameters here
-    float aParamGainL, aParamGainR;
+   // float aParamGainL, aParamGainR;
+    float fs;
+    
+    stk::BiQuad lowFilterL, lowFilterR;
+    stk::BiQuad peakFilterL, peakFilterR;
+    
+    stk::Delay delay1L, delay1R;
+    
+    float aParamDryGain, aParamWetGain;
+    float aParamDecay; 
 
     
     // STEP XX - Add any variables or objects used in the DSP
     
     // STEP XX - Add any methods used in algorithm parameter calculation or DSP
     void calcAlgParams();
+    float linearGainFromDb(float gainDb);
+    
+    void calcFilterCoeffs();
+    void calcGains();
+    void calcDelays();
+    int calcDelaySampsFromMsec(float time);
     
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Musi45effectAudioProcessor)

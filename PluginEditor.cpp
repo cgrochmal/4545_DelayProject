@@ -117,7 +117,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Decay
     decaySlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    decaySlider.setRange(0.01, 20.0, 0.01);
+    decaySlider.setRange(0.01, 0.98, 0.01);
     addAndMakeVisible(decaySlider);
     decaySlider.addListener(this);
     decaySlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -149,7 +149,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     // Wet
     wetSlider.setSliderStyle (Slider::LinearVertical);
-    wetSlider.setRange(0.01, 20.0, 0.01);
+    wetSlider.setRange(-96.0, 10.0, 0.1);
     addAndMakeVisible(wetSlider);
     wetSlider.addListener(this);
     wetSlider.setColour(0x1001310, Colour(255, 255, 255));
@@ -163,7 +163,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Dry
     drySlider.setSliderStyle (Slider::LinearVertical);
-    drySlider.setRange(0.01, 20.0, 0.01);
+    drySlider.setRange(-96.0, 10.0, 0.1);
     addAndMakeVisible(drySlider);
     drySlider.addListener(this);
     drySlider.setColour(0x1001310, Colour(255, 255, 255));

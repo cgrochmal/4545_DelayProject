@@ -21,7 +21,7 @@ const int defaultPeakFreq = 750; //Hz
 const int defaultCutoff = 50; //hz
 const float defaultQ = 3.f;
 const int defaultTime = 40; //ms
-const float defaultSignalMultiplier = 1.f;
+const float defaultDecay = 0.7f;
 
 
 //==============================================================================
@@ -45,17 +45,20 @@ Musi45effectAudioProcessor::Musi45effectAudioProcessor()
     usrParams[shelfGainParam].setMinMax(-96.0, 10.0);
     usrParams[shelfGainParam].setWithUparam(defaultVolume);
     
-    usrParams[decayParam].setMinMax(0.01, 20.0);
-    usrParams[decayParam].setWithUparam(defaultSignalMultiplier);
+    usrParams[decayParam].setMinMax(0.01, 0.98);
+    usrParams[decayParam].setWithUparam(defaultDecay);
 
     usrParams[timeParam].setMinMax(1, 4000);
     usrParams[timeParam].setWithUparam(defaultTime);
     
-    usrParams[wetParam].setMinMax(0.01, 20.0);
-    usrParams[wetParam].setWithUparam(defaultSignalMultiplier);
+    usrParams[wetParam].setMinMax(-96.0, 10.0);
+    usrParams[wetParam].setWithUparam(defaultVolume);
 
-    usrParams[dryParam].setMinMax(0.01, 20.0);
-    usrParams[dryParam].setWithUparam(defaultSignalMultiplier);
+    usrParams[dryParam].setMinMax(-96.0, 10.0);
+    usrParams[dryParam].setWithUparam(defaultVolume);
+    
+    aParamDryGain = 0.7; //-3dB as linear gain
+    aParamWetGain = 0.7;
 
     
 //    usrParams[volumeParam].setMinMax(-96.0, 10.0);
@@ -190,7 +193,17 @@ void Musi45effectAudioProcessor::setParameter (int index, float newValue)
     calcAlgParams();
 }
 
+int Musi45effectAudioProcessor::calcDelaySampsFromMsec(float time){
+    return (fs/1000.f)*time;
+}
 
+void Musi45effectAudioProcessor::calcDelays()
+{
+    float msec = usrParams[timeParam].getUparamVal();
+    int samps = calcDelaySampsFromMsec(msec);
+    delay1L.setDelay(samps);
+    delay1R.setDelay(samps);
+}
 
 // I added this function to calculate new gain values whenever Volume or Pan changes
 void Musi45effectAudioProcessor::calcAlgParams()
@@ -224,6 +237,19 @@ void Musi45effectAudioProcessor::calcAlgParams()
 //    // we can fold in both the panning and volume into one gain for each channel
 //    aParamGainL = tempGain * tempL;      // the gain for the left channel
 //    aParamGainR = tempGain * tempR;      // the gain for the right channel
+    
+    aParamDryGain = linearGainFromDb(usrParams[dryParam].getUparamVal());
+    aParamWetGain = linearGainFromDb(usrParams[wetParam].getUparamVal());
+    aParamDecay = usrParams[decayParam].getUparamVal();
+    calcFilterCoeffs();
+    calcDelays();
+   
+    
+}
+
+float Musi45effectAudioProcessor::linearGainFromDb(float gainDb){
+    
+    return powf(10, gainDb / 20.0);
 }
 
 // STEP 4.7b
@@ -242,18 +268,57 @@ float Musi45effectAudioProcessor::getParameterDefaultValue (int index)
         case shelfGainParam:
             return defaultVolume;
         case decayParam:
-            return defaultSignalMultiplier;
+            return defaultDecay;
         case timeParam:
             return defaultTime;
         case wetParam:
-            return defaultSignalMultiplier;
+            return defaultVolume;
         case dryParam:
-            return defaultSignalMultiplier;
+            return defaultVolume;
 
         default:            break;
     }
     
     return 0.0f;
+}
+
+void Musi45effectAudioProcessor::calcFilterCoeffs()
+{
+    // low shelf
+    float shelfGainDb = usrParams[shelfGainParam].getUparamVal();
+    float fc = usrParams[lowCutoffParam].getUparamVal();
+    float shelfCoeffs[5]; // an array of 5 floats for filter coeffs
+  
+  
+   
+    // peak
+    float peakGainDb = usrParams[peakGainParam].getUparamVal();
+    float Q = usrParams[qParam].getUparamVal();
+    float peakFreq = usrParams[peakFreqParam].getUparamVal();
+    float peakCoeffs[5];
+    
+    
+    Mu45FilterCalc::calcCoeffsLowShelf(shelfCoeffs, fc, shelfGainDb, fs);
+    Mu45FilterCalc::calcCoeffsPeak(peakCoeffs, peakFreq, peakGainDb, Q, fs);
+    
+    // high shelf
+    // Mu45FilterCalc::calcCoeffsHighShelf(coeffs, fc, gainDb, fs);
+    
+    // LPF
+    // Mu45FilterCalc::calcCoeffsLPF(coeffs, fc, Q, fs);
+    
+    // HPF
+    //Mu45FilterCalc::calcCoeffsHPF(coeffs, fc, Q, fs);
+    
+    // BPF
+    // Mu45FilterCalc::calcCoeffsBPF(coeffs, fc, Q, fs);
+    
+    // set filter (the filters are stk::BiQuads)
+    lowFilterL.setCoefficients(shelfCoeffs[0], shelfCoeffs[1], shelfCoeffs[2], shelfCoeffs[3], shelfCoeffs[4]);
+    lowFilterR.setCoefficients(shelfCoeffs[0], shelfCoeffs[1], shelfCoeffs[2], shelfCoeffs[3], shelfCoeffs[4]);
+    
+    peakFilterL.setCoefficients(peakCoeffs[0], peakCoeffs[1], peakCoeffs[2], peakCoeffs[3], peakCoeffs[4]);
+    peakFilterR.setCoefficients(peakCoeffs[0], peakCoeffs[1], peakCoeffs[2], peakCoeffs[3], peakCoeffs[4]);
 }
 
 // STEP 4.8
@@ -370,6 +435,15 @@ void Musi45effectAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    
+    fs = sampleRate;
+    
+    int maxSamps = calcDelaySampsFromMsec(4000);
+    delay1L.setMaximumDelay(maxSamps);
+    delay1R.setMaximumDelay(maxSamps);
+    
+    // calc all alg params
+    calcAlgParams();
 }
 
 void Musi45effectAudioProcessor::releaseResources()
@@ -397,8 +471,30 @@ void Musi45effectAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBu
     float* channelDataL = buffer.getWritePointer (0);
     float* channelDataR = buffer.getWritePointer (1);
     
+    float tempL, tempR;
+    float delayedL, delayedR;
+    float infbL, infbR;
+    float wetL, wetR;
+    float dryL, dryR;
+    
     for (int i = 0; i < numSamples; ++i)
     {
+        
+        tempL = delay1L.nextOut();
+        tempR = delay1R.nextOut();
+        
+        infbL = tempL*aParamDecay + channelDataL[i];
+        infbR = tempR*aParamDecay + channelDataR[i];
+        
+        delayedL = delay1L.tick(infbL);
+        delayedR = delay1R.tick(infbR);
+        
+        wetL =  delayedL * aParamDecay * aParamWetGain;
+        wetR =  delayedR * aParamDecay * aParamWetGain;
+        
+        channelDataL[i] = wetL + aParamDryGain*channelDataL[i];
+        channelDataR[i] = wetR + aParamDryGain*channelDataR[i];
+        
 //        // Do some DSP magic:
 //        channelDataL[i] = aParamGainL * channelDataL[i];
 //        channelDataR[i] = aParamGainR * channelDataR[i];
