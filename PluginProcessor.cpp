@@ -14,7 +14,7 @@
 
 // STEP 4.4a - define default values for all user params
 //const float defaultVolume = -96.0f;
-const float defaultVolume = -3.0f;
+const float defaultVolume = -3.f;
 const float defaultPan = 0.0;
 const double PI = 3.1415926535897932384626433832795;
 const int defaultPeakFreq = 750; //Hz
@@ -33,7 +33,7 @@ Musi45effectAudioProcessor::Musi45effectAudioProcessor()
     usrParams[peakFreqParam].setMinMax(300, 20000);
     usrParams[peakFreqParam].setWithUparam(defaultPeakFreq);
     
-    usrParams[peakGainParam].setMinMax(-96.0, 10.0);
+    usrParams[peakGainParam].setMinMax(-96.0, 0.0);
     usrParams[peakGainParam].setWithUparam(defaultVolume);
     
     usrParams[qParam].setMinMax(0.5, 20.0);
@@ -42,10 +42,10 @@ Musi45effectAudioProcessor::Musi45effectAudioProcessor()
     usrParams[lowCutoffParam].setMinMax(0, 200);
     usrParams[lowCutoffParam].setWithUparam(defaultCutoff);
     
-    usrParams[shelfGainParam].setMinMax(-96.0, 10.0);
+    usrParams[shelfGainParam].setMinMax(-96.0, 0.0);
     usrParams[shelfGainParam].setWithUparam(defaultVolume);
     
-    usrParams[decayParam].setMinMax(0.01, 0.98);
+    usrParams[decayParam].setMinMax(0.01, 0.9);
     usrParams[decayParam].setWithUparam(defaultDecay);
 
     usrParams[timeParam].setMinMax(1, 4000);
@@ -60,15 +60,7 @@ Musi45effectAudioProcessor::Musi45effectAudioProcessor()
     aParamDryGain = 0.7; //-3dB as linear gain
     aParamWetGain = 0.7;
 
-    
-//    usrParams[volumeParam].setMinMax(-96.0, 10.0);
-//    usrParams[volumeParam].setWithUparam(defaultVolume);
-//    
-//    usrParams[panParam].setMinMax(-50.0, 50.0);
-//    usrParams[panParam].setWithUparam(defaultPan);
-//    
-//    // set parameters internall to default and calculate aParams
-//    calcAlgParams();
+
 }
 
 Musi45effectAudioProcessor::~Musi45effectAudioProcessor()
@@ -126,68 +118,6 @@ float Musi45effectAudioProcessor::getParameter (int index)
 
 void Musi45effectAudioProcessor::setParameter (int index, float newValue)
 {
-    // This method will be called by the host, probably on the audio thread, so
-    // it's absolutely time-critical. Don't use critical sections or anything
-    // UI-related, or anything at all that may block in any way!
-    
-    // STEP 4.5 - set algorithm parameters from user parameters
-//        // first user param...
-//        case peakFreqParam:
-//            usrParams[peakFreqParam].setWithVstVal(newValue);
-//            calcAlgParams();
-//            break;
-//            
-//        case peakGainParam:
-//            usrParams[peakGainParam].setWithVstVal(newValue);
-//            calcAlgParams();
-//            break;
-//            
-//        case qParam:
-//            usrParams[qParam].setWithVstVal(newValue);
-//            calcAlgParams();
-//            break;
-//            
-//        case lowCutoffParam:
-//            usrParams[lowCutoffParam].setWithVstVal(newValue);
-//            calcAlgParams();
-//            break;
-//        
-//        case shelfGainParam:
-//            usrParams[shelfGainParam].setWithVstVal(newValue);
-//            calcAlgParams();
-//            break;
-//        
-//        case decayParam:
-//            usrParams[decayParam].setWithVstVal(newValue);
-//            calcAlgParams();
-//            break;
-//            
-//        case timeParam:
-//            usrParams[timeParam].setWithVstVal(newValue);
-//            calcAlgParams();
-//            break;
-//            
-//        case wetParam:
-//            usrParams[wetParam].setWithVstVal(newValue);
-//            calcAlgParams();
-//            break;
-//            
-//        case dryParam:
-//            usrParams[dryParam].setWithVstVal(newValue);
-//            calcAlgParams();
-//            break;
-//        
-//        
-////
-////        // second user param...
-////        case panParam:
-////            usrParams[panParam].setWithVstVal(newValue);
-////            calcAlgParams();
-////            break;
-////
-//       default:
-//            break;
-//    }
     
     usrParams[index].setWithVstVal(newValue);
     calcAlgParams();
@@ -208,35 +138,7 @@ void Musi45effectAudioProcessor::calcDelays()
 // I added this function to calculate new gain values whenever Volume or Pan changes
 void Musi45effectAudioProcessor::calcAlgParams()
 {
- //   double pan, tempGain, tempL, tempR;
-//    
-//    // calc linear gain from dB volume
-//    tempGain = pow(10, usrParams[volumeParam].getUparamVal() / 20);   // the linear gain from the dB slider
-//    
-//    // calc L and R gains from pan setting
-//    pan = usrParams[panParam].getUparamVal();
-//    
-//    // Constant Amplitude Pan
-//    //tempR = (pan + 50.0)/100.0;       // panning gain for Right
-//    //tempL = 1.0 - tempR;                    // panning gain for Left
-//    
-//    // OR Constant Power Pan
-//    //tempL = cos((PI/2.0)*(pan + 50.0)/100.0);  // panning gain for Left
-//    //tempR = sin((PI/2.0)*(pan + 50.0)/100.0);  // panning gain for Right
-//    
-//    // OR Ableton Style balance
-//    if (pan < 0) {                    // to the left
-//        tempL = 1.0;
-//        tempR = 1.0 + pan/50.0;
-//    }
-//    else {                                  // to the right
-//        tempR = 1.0;
-//        tempL = 1.0 - pan/50.0;
-//    }
-//    
-//    // we can fold in both the panning and volume into one gain for each channel
-//    aParamGainL = tempGain * tempL;      // the gain for the left channel
-//    aParamGainR = tempGain * tempR;      // the gain for the right channel
+
     
     aParamDryGain = linearGainFromDb(usrParams[dryParam].getUparamVal());
     aParamWetGain = linearGainFromDb(usrParams[wetParam].getUparamVal());
@@ -325,15 +227,6 @@ void Musi45effectAudioProcessor::calcFilterCoeffs()
 const String Musi45effectAudioProcessor::getParameterName (int index)
 {
     
-    //Slider peakFreqSlider;
-    //Slider peakGainSlider;
-    //Slider qSlider;
-    //Slider lowFreqSlider;
-    //Slider lowGainSlider;
-    //Slider decaySlider;
-    //Slider timeSlider;
-    //Slider wetSlider;
-    //Slider drySlider;
     switch (index)
     {
         case peakFreqParam:   return "peak frequency";
@@ -472,32 +365,31 @@ void Musi45effectAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBu
     float* channelDataR = buffer.getWritePointer (1);
     
     float tempL, tempR;
-    float delayedL, delayedR;
-    float infbL, infbR;
     float wetL, wetR;
-    float dryL, dryR;
+    float filteredL, filteredR;
     
     for (int i = 0; i < numSamples; ++i)
     {
         
-        tempL = delay1L.nextOut();
-        tempR = delay1R.nextOut();
+        tempL = delay1L.lastOut();
+        tempR = delay1R.lastOut();
         
-        infbL = tempL*aParamDecay + channelDataL[i];
-        infbR = tempR*aParamDecay + channelDataR[i];
+        filteredL = peakFilterL.tick(lowFilterL.tick(tempL));
+        filteredR = peakFilterR.tick(lowFilterR.tick(tempR));
         
-        delayedL = delay1L.tick(infbL);
-        delayedR = delay1R.tick(infbR);
+        wetL =  filteredL * aParamDecay;
+        wetR =  filteredR * aParamDecay;
         
-        wetL =  delayedL * aParamDecay * aParamWetGain;
-        wetR =  delayedR * aParamDecay * aParamWetGain;
+        tempL = wetL + channelDataL[i];
+        tempR = wetR + channelDataR[i];
+
+        delay1L.tick(tempL);
+        delay1R.tick(tempR);
         
-        channelDataL[i] = wetL + aParamDryGain*channelDataL[i];
-        channelDataR[i] = wetR + aParamDryGain*channelDataR[i];
+        channelDataL[i] =  wetL*aParamWetGain + aParamDryGain*channelDataL[i];
+        channelDataR[i] =  wetR*aParamWetGain + aParamDryGain*channelDataR[i];
         
-//        // Do some DSP magic:
-//        channelDataL[i] = aParamGainL * channelDataL[i];
-//        channelDataR[i] = aParamGainR * channelDataR[i];
+   
     }
 }
 

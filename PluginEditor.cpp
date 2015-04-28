@@ -25,14 +25,14 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
         wetSlider("wet"),
         drySlider("dry"),
         peakFreqLabel("","Peak Frequency"),
-        peakGainLabel("", "Peak Gain"),
-        qLabel("","Peak Q"),
-        lowFreqLabel("","Low Frequency"),
-        lowGainLabel("", "Low Gain"),
+        peakGainLabel("", "Peak Gain (dB)"),
+        qLabel("","Q"),
+        lowFreqLabel("","Cutoff Frequency"),
+        lowGainLabel("", "Gain (dB)"),
         decayLabel("", "Decay"),
-        timeLabel("", "Time"),
-        wetLabel("", "Wet"),
-        dryLabel("", "Dry")
+        timeLabel("", "Time (ms)"),
+        wetLabel("", "Wet Gain (dB)"),
+        dryLabel("", "Dry Gain (dB)")
 
 {
     // Peak Frequency
@@ -53,7 +53,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Peak Gain
     peakGainSlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    peakGainSlider.setRange(-96.0, 10.0, 0.1);
+    peakGainSlider.setRange(-96.0, 0.0, 0.1);
     addAndMakeVisible(peakGainSlider);
     peakGainSlider.addListener(this);
     peakGainSlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -101,7 +101,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Low Gain
     lowGainSlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    lowGainSlider.setRange(-96.0, 10.0, 0.1);
+    lowGainSlider.setRange(-96.0, 0.0, 0.1);
     addAndMakeVisible(lowGainSlider);
     lowGainSlider.addListener(this);
     lowGainSlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -117,7 +117,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     //Decay
     decaySlider.setSliderStyle (Slider::RotaryHorizontalDrag);
-    decaySlider.setRange(0.01, 0.98, 0.01);
+    decaySlider.setRange(0.01, 0.9, 0.01);
     addAndMakeVisible(decaySlider);
     decaySlider.addListener(this);
     decaySlider.setColour(0x1001311, Colour(255, 255, 255));
@@ -177,7 +177,7 @@ Musi45effectAudioProcessorEditor::Musi45effectAudioProcessorEditor (Musi45effect
     
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (750, 420);
+    setSize (750, 460);
     
     // STEP 5.4 - start the timer
     startTimer (50);      // timerCallback() will get called every 50 msec.
@@ -196,7 +196,22 @@ void Musi45effectAudioProcessorEditor::paint (Graphics& g)
     // STEP 1.6 - add some text to the UI
     g.setColour (Colours::white);
     g.setFont (30.0f);
-    g.drawFittedText ("EXPONENTIAL DELAY (working title)", getLocalBounds(), Justification::centredTop, 1);
+    g.drawFittedText ("FILET-O-DELAY", getLocalBounds(), Justification::centredTop, 1);
+    
+   // rawText (const String &text, int x, int y, int width, int height, Justification justificationType, bool useEllipsesIfTooBig=true) const
+    g.drawText ("Peak Filter", 0, 45, 140, 40, Justification::centredTop, true);
+    g.drawText ("Shelf Filter", 145, 45, 150, 40, Justification::centredTop, true);
+    g.drawText ("Delay", 300, 45, 160, 40, Justification::centredTop, true);
+    g.drawText ("Mix", 460, 45, 290, 40, Justification::centredTop, true);
+
+    
+    
+    
+    g.drawLine(145, 40, 145, 460, 2);
+    g.drawLine(300, 40, 300, 460, 2);
+    g.drawLine(460, 40, 460, 460, 2);
+    g.drawLine(0, 80, 750, 80, 2);
+    g.drawLine(0, 40, 750, 40, 2);
 }
 
 void Musi45effectAudioProcessorEditor::resized()
@@ -205,15 +220,17 @@ void Musi45effectAudioProcessorEditor::resized()
     // subcomponents in your editor..
     
     // STEP 1.5 - set the position and size of the slider objects
-    peakFreqSlider.setBounds(20, 60, 100, 100);
-    peakGainSlider.setBounds(20, 180, 100, 100);
-    qSlider.setBounds(20, 300, 100, 100);
-    lowFreqSlider.setBounds(170, 120, 100, 100);
-    lowGainSlider.setBounds(170, 245, 100, 100);
-    decaySlider.setBounds(315, 80, 125, 125);
-    timeSlider.setBounds(315, 240, 125, 125);
-    wetSlider.setBounds(500, 80, 100, 300);
-    drySlider.setBounds(620, 80, 100, 300);
+    peakFreqSlider.setBounds(20, 110, 100, 100);
+    peakGainSlider.setBounds(20, 230, 100, 100);
+    qSlider.setBounds(20, 350, 100, 100);
+    
+    
+    lowFreqSlider.setBounds(170, 170, 100, 100);
+    lowGainSlider.setBounds(170, 295, 100, 100);
+    decaySlider.setBounds(315, 130, 125, 125);
+    timeSlider.setBounds(315, 290, 125, 125);
+    wetSlider.setBounds(500, 130, 100, 300);
+    drySlider.setBounds(620, 130, 100, 300);
     
 }
 
